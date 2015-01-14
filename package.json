@@ -1,0 +1,33 @@
+{
+  "name": "nscale-chaos-monkey",
+  "description": "nearForm's nscale chaos monkey",
+  "keywords": [
+    "nearForm",
+    "deployer",
+    "nscale",
+    "chaos",
+    "monkey"
+  ],
+  "main": "monkey",
+  "version": "0.0.1",
+  "license": "Artistic License 2.0",
+  "author": "Peter Elger (http://nearform.com/)",
+  "contributors": [
+    "Peter Elger <elger.peter@gmail.com> (http://peterelger.com/)",
+    "Matteo Collina <matteo.collina@nearform.com>"
+  ],
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "nscale-util": "^0.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nearform/nscale-chaos-monkey.git"
+  },
+  "devDependencies": {},
+  "bin": {},
+  "scripts": {}
+}
