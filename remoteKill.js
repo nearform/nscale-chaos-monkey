@@ -14,18 +14,19 @@
 
 'use strict';
 
-var executor = require('nscale-util').executor();
 
 
 /**
  * execute local kill of a container
  */
-module.exports = function() {
+module.exports = function(config) {
+  var ssh = require('nscale-util').sshexec();
 
 
+  var kill = function(ipAddress, containerId, out, cb) { 
 
-  var kill = function(containerId, out, cb) { 
-    executor.exec('live', 'docker kill ' + containerId, '.', out, function(err) {
+    // identitiy file...
+    ssh.exec('live', ipAddress, 'ubuntu', '/home/ubuntu/nscale-west.pem', 'docker kill ' + containerId, function(err) {
       cb(err);
     });
   };

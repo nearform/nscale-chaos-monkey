@@ -15,8 +15,6 @@
 'use strict';
 
 var _ = require('lodash');
-var local = require('./localKill')();
-var remote = require('./remoteKill')();
 
 
 
@@ -24,7 +22,9 @@ var remote = require('./remoteKill')();
  * the chaos monkey randomly connects to the nominated systems and kills random containers
  * at the specificed interval
  */
-module.exports = function() {
+module.exports = function(config) {
+  var local = require('./localKill')();
+  var remote = require('./remoteKill')(config);
 
   var randomInt = function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -36,8 +36,18 @@ module.exports = function() {
     var systems = [];
 
     _.each(system.topology.containers, function(c) {
-      if (c.type === 'aws-instance') {
-        systems.push({id: c.id, ip: c.specific.publicIpAddress, contains: c.contains});
+      if (c.type === 'aws-ami') {
+        var toPush = {id: c.id, ip: c.specific.privateIpAddress, contains: []};
+        _.each(c.contains, function(ckey) {
+          if (system.topology.containers[ckey] && system.topology.containers[ckey].specific && system.topology.containers[ckey].specific.dockerContainerId) {
+            if (!systemDef.topology.containers[ckey].specific.name) {
+              toPush.contains.push(system.topology.containers[ckey].specific.dockerContainerId);
+            }
+          }
+        });
+        if (toPush.contains.length > 0) {
+          systems.push(toPush);
+        }
       }
     });
 
@@ -77,8 +87,8 @@ module.exports = function() {
           local.kill(targetContainer, out, cb);
         }
         else {
-          logger.info('eeek oook skreeeeeee remote kill: ' + targetContainer);
-          remote.kill(targetContainer, out, cb);
+          logger.info('eeek oook skreeeeeee remote kill: ' + target.ip + ' ' + targetContainer);
+          remote.kill(target.ip, targetContainer, out, cb);
         }
       }
       else {
